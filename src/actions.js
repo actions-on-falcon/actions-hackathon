@@ -49,6 +49,10 @@ app.intent('visiting', conv => {
         url: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrcode,
         alt: qrcode,
       }),
+      buttons: new Button({
+        title: 'Open on web browser',
+        url: 'https://assistant.google.com/',
+      }),
     })
   }
   else {
