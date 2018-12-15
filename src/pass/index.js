@@ -6,6 +6,12 @@ class FastPassService extends MemoryService {
 
     return {active: true, result}
   }
+
+  async create(data, params) {
+    const pass = await super.create(data, params)
+
+    return {pass}
+  }
 }
 
 export default function debug() {
