@@ -9,16 +9,14 @@ import {
 
 import basicAuth from 'basic-auth-connect'
 import chalk from 'chalk'
-import axios from 'axios'
 
 import core from '../index'
+import {sendMessage} from '../pass/sms'
 
 const app = dialogflow({debug: false})
 
 function isSpeaker(conv) {
-  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT'))
-    return false
-  else return true
+  return !conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
 }
 
 app.intent('welcome', conv => {
@@ -74,19 +72,23 @@ app.intent('visiting', async conv => {
   const response = new SimpleResponse({speech, text})
 
   conv.ask(response)
+
+  conv.user.storage.pass = pass
 })
 
-app.intent('sending', conv => {
+app.intent('sending', async conv => {
   console.log(chalk.green('info:'), 'Hit sending intent')
   const phone = conv.parameters['phone-number']
 
-  // TODO: Send an SMS
+  sendMessage(phone, conv.user.storage.pass)
+    .then(console.log)
+    .catch(console.error)
 
   conv.ask(
     new SimpleResponse({
       speech:
-        '<speak>SMS has succuessfully sent to reviver<break time="400ms"/>You can now say "Exit" to terminate this application</speak>',
-      text: 'SMS has succuessfully sent to reviver',
+        '<speak>SMS has succuessfully sent to receiver<break time="400ms"/>You can now say "Exit" to terminate this application</speak>',
+      text: 'SMS has succuessfully sent to receiver',
     }),
   )
 
