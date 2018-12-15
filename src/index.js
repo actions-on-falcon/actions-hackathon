@@ -14,9 +14,14 @@ const server = express()
 
 const {PORT = 3000, HTTP_USER, HTTP_PASS} = process.env
 
-server.use(basicAuth(HTTP_USER, HTTP_PASS))
 server.use(bodyParser.json())
 
-server.use(actions)
+server.get('/', (req, res) => {
+  res.send({status: 'OK'})
+})
+
+const httpAuth = basicAuth(HTTP_USER, HTTP_PASS)
+
+server.post('/actions', httpAuth, actions)
 
 server.listen(PORT)
