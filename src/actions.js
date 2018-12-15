@@ -1,21 +1,28 @@
-import {dialogflow} from 'actions-on-google'
+import {dialogflow, SimpleResponse} from 'actions-on-google'
+import chalk from 'chalk'
 
 const app = dialogflow({debug: false})
 
-app.intent('welcome', (conv) => {
-  console.log('\x1b[33minfo:\x1b[0m Hit welcome intent');
-  conv.ask(new SimpleResponse({
-    speech: 'Hello',
-    text: 'Hello',
-  }));
-});
+app.intent('welcome', conv => {
+  console.log(chalk.green('info:'), 'Hit welcome intent')
 
-app.intent('visiting', (conv) => {
-  console.log('\x1b[33minfo:\x1b[0m Hit welcome intent');
-  conv.ask(new SimpleResponse({
+  const response = new SimpleResponse({
     speech: 'Hello',
     text: 'Hello',
-  }));
-});
+  })
+
+  conv.ask(response)
+})
+
+app.intent('visiting', conv => {
+  console.log(chalk.green('info:'), 'Hit welcome intent')
+
+  const response = new SimpleResponse({
+    speech: 'Hello',
+    text: 'Hello',
+  })
+
+  conv.ask(response)
+})
 
 export default app
