@@ -43,7 +43,7 @@ app.intent('visiting', conv => {
   var response
 
   if(isSpeaker(conv) === false) {
-    response = new BasicCard({
+    conv.ask(new BasicCard({
       title: 'Visitor access code created!',
       subtitle: 'Code is ' + qrcode,
       image: new Image({
@@ -54,14 +54,28 @@ app.intent('visiting', conv => {
         title: 'Open on web browser',
         url: 'https://assistant.google.com/',
       }),
-    })
+    }))
   }
+  conv.ask('<speak>Visitor code is created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' + qrcode + '</say-as><break time="600ms"/>Which reciver phone number to send?</speak>')
   else {
-    response = '<speak>Visitor code is created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' + qrcode + '</say-as></speak>'
+    conv.ask('<speak>Visitor code is created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' + qrcode + '</say-as><break time="600ms"/>Which reciver phone number to send?</speak>')
   }
+})
+
+app.intent('sending', conv => {
+  console.log(chalk.green('info:'), 'Hit sending intent')
+  const phone = conv.parameters['phone-number']
+
+  // TODO: Send an SMS
+
+  const response = new SimpleResponse({
+    speech: '<speak>SMS has succuessfully sent to reviver</speak>',
+    text: 'SMS has succuessfully sent to reviver',
+  })
 
   conv.ask(response)
 })
+
 
 const {HTTP_USER, HTTP_PASS} = process.env
 
