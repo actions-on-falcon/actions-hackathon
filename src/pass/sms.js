@@ -18,7 +18,7 @@ export async function sendMessage(phone, pass) {
 
   const body = `You have received a visitor pass for Sansiri!
   Your visitor code is ${code}, which you can use for your visit at ${time}.
-  Please get your pass at https://fastpass.netlify.com/pass?id=${code} and show them at the venue.`
+  Please get your pass at https://fastpass.netlify.com/visitor?id=${code} and show them at the venue.`
 
   const result = await twilio.messages.create({
     body,

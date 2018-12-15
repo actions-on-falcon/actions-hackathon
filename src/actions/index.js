@@ -66,7 +66,7 @@ app.intent('visiting', async conv => {
       }),
       buttons: new Button({
         title: 'View the Visitor Pass',
-        url: `https://fastpass.netlify.com/pass?id=${code}`,
+        url: `https://fastpass.netlify.com/visitor?id=${code}`,
       }),
     })
 
