@@ -13,11 +13,11 @@ selfPing('https://actions-on-falcon.herokuapp.com/')
 const server = express()
 const app = dialogflow({debug: false})
 
-const {HTTP_USER, HTTP_PASS} = process.env
+const {PORT, HTTP_USER, HTTP_PASS} = process.env
 
 server.use(basicAuth(HTTP_USER, HTTP_PASS))
 
 server.use(bodyParser.json())
 server.use(app)
 
-server.listen(process.env.PORT)
+server.listen(PORT)
