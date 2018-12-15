@@ -29,6 +29,7 @@
     "logs": "firebase functions:log"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.10.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-standard": "^12.0.0",
