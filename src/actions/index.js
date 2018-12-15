@@ -44,6 +44,8 @@ app.intent('visiting', async conv => {
     time,
   })
 
+  console.log('Type of time', typeof time, time && time.constructor.name)
+
   const {code} = pass
   conv.user.storage.pass = pass
 
