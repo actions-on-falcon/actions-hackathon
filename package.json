@@ -9,6 +9,7 @@
     "@feathersjs/express": "^1.2.7",
     "@feathersjs/feathers": "^3.2.3",
     "@feathersjs/socketio": "^3.2.7",
+    "@google-cloud/firestore": "^0.19.0",
     "actions-on-google": "^2.5.0",
     "axios": "^0.18.0",
     "backpack-core": "^0.8.3",
