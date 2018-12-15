@@ -1,4 +1,4 @@
-import {dialogflow, SimpleResponse, BasicCard} from 'actions-on-google'
+import {dialogflow, SimpleResponse, BasicCard, Image, Button, Suggestions} from 'actions-on-google'
 import basicAuth from 'basic-auth-connect'
 import chalk from 'chalk'
 import axios from 'axios'
@@ -68,12 +68,14 @@ app.intent('sending', conv => {
 
   // TODO: Send an SMS
 
-  const response = new SimpleResponse({
-    speech: '<speak>SMS has succuessfully sent to reviver</speak>',
+  conv.ask(new SimpleResponse({
+    speech: '<speak>SMS has succuessfully sent to reviver<break time="400ms"/>You can now say "Exit" to terminate this application</speak>',
     text: 'SMS has succuessfully sent to reviver',
-  })
+  }))
 
-  conv.ask(response)
+  if(isSpeaker(conv) === false) {
+    conv.ask(new Suggestions('Exit'))
+  }
 })
 
 
