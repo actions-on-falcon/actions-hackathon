@@ -1,3 +1,5 @@
+import errors from '@feathersjs/errors'
+
 import firestore from '../common/firestore'
 
 const passes = firestore.collection('passes')
@@ -28,6 +30,16 @@ class FastPassService {
     await passes.doc(code).set(pass)
 
     return {success: true, pass}
+  }
+
+  async get(id) {
+    const pass = await passes.doc(id).get()
+
+    if (!pass.exists) {
+      return new errors.NotFound('Pass not found')
+    }
+
+    return {id: pass.id, ...pass.data()}
   }
 }
 
