@@ -1,12 +1,28 @@
 import twilio from '../common/twilio'
 
+function asThaiNumber(phone) {
+  // If begin with 0, append +66
+  if (phone[0] === '0') {
+    return `+66${phone.substr(1)}`
+  }
+
+  return phone
+}
+
 export async function sendMessage(phone, pass) {
-  console.log('> Sending SMS to', phone)
+  const {name, time, code} = pass
+  phone = asThaiNumber(phone)
+
+  // prettier-ignore
+  console.log('> Sending SMS to', phone, 'with name:', name, 'with code:', code, 'at time:', time)
+
+  const body = `You have received a visitor pass for Sansiri!
+  Your visitor code is ${code}, which you can use for your visit at ${time}.
+  Please get your pass at https://fastpass.netlify.com/visitor?id=${code} and show them at the venue.`
 
   const result = await twilio.messages.create({
-    body: 'Siri FastPass',
-    to: '+66812390813',
-    // from: '+15005550006',
+    body,
+    to: phone,
     from: '+19404681908',
   })
 

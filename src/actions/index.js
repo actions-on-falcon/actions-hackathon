@@ -20,7 +20,7 @@ function isSpeaker(conv) {
 }
 
 app.intent('welcome', conv => {
-  console.log(chalk.green('info:'), 'Hit welcome intent')
+  console.log('> Welcome Intent')
 
   const response = new SimpleResponse({
     speech: 'Hello',
@@ -33,33 +33,21 @@ app.intent('welcome', conv => {
 app.intent('visiting', async conv => {
   console.log(chalk.green('info:'), 'Hit visiting intent')
 
-  const {time, name} = conv.parameters
+  let {time, name} = conv.parameters
+
+  // Normalise name parameter
+  if (name['given-name']) name = name['given-name']
+  if (typeof name !== 'string') name = String(name)
 
   const {pass} = await core.service('pass').create({
     name,
     time,
   })
 
+  console.log('Type of time', typeof time, time && time.constructor.name)
+
   const {code} = pass
-
-  if (!isSpeaker(conv)) {
-    const card = new BasicCard({
-      title: 'Visitor access code created!',
-      subtitle: 'Code is ' + code,
-      image: new Image({
-        url:
-          'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' +
-          code,
-        alt: code,
-      }),
-      buttons: new Button({
-        title: 'Open on web browser',
-        url: 'https://assistant.google.com/',
-      }),
-    })
-
-    conv.ask(card)
-  }
+  conv.user.storage.pass = pass
 
   const speech =
     '<speak>The visitor code has been created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' +
@@ -70,29 +58,44 @@ app.intent('visiting', async conv => {
     "The visitor's QR code has been created. Which phone number do you want to send the code to?"
 
   const response = new SimpleResponse({speech, text})
-
   conv.ask(response)
 
-  conv.user.storage.pass = pass
+  if (!isSpeaker(conv)) {
+    const card = new BasicCard({
+      title: 'Visitor Pass has been created!',
+      subtitle: 'Code is ' + code,
+      image: new Image({
+        url:
+          'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' +
+          code,
+        alt: code,
+      }),
+      buttons: new Button({
+        title: 'View the Visitor Pass',
+        url: `https://fastpass.netlify.com/visitor?id=${code}`,
+      }),
+    })
+
+    conv.ask(card)
+  }
 })
 
 app.intent('sending', async conv => {
-  console.log(chalk.green('info:'), 'Hit sending intent')
   const phone = conv.parameters['phone-number']
+  console.log('> SMS Sending Intent')
 
   sendMessage(phone, conv.user.storage.pass)
     .then(console.log)
     .catch(console.error)
 
-  conv.ask(
-    new SimpleResponse({
-      speech:
-        '<speak>SMS has succuessfully sent to receiver<break time="400ms"/>You can now say "Exit" to terminate this application</speak>',
-      text: 'SMS has succuessfully sent to receiver',
-    }),
-  )
+  const response = new SimpleResponse({
+    speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
+    text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
+  })
 
-  if (isSpeaker(conv) === false) {
+  conv.ask(response)
+
+  if (!isSpeaker(conv)) {
     conv.ask(new Suggestions('Exit'))
   }
 })
