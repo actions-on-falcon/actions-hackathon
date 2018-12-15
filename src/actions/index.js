@@ -1,5 +1,6 @@
-import {dialogflow, SimpleResponse} from 'actions-on-google'
 import chalk from 'chalk'
+import basicAuth from 'basic-auth-connect'
+import {dialogflow, SimpleResponse} from 'actions-on-google'
 
 const app = dialogflow({debug: false})
 
@@ -25,4 +26,10 @@ app.intent('visiting', conv => {
   conv.ask(response)
 })
 
-export default app
+const {HTTP_USER, HTTP_PASS} = process.env
+
+const httpAuth = basicAuth(HTTP_USER, HTTP_PASS)
+
+export default function debug() {
+  this.all('/actions', httpAuth, app)
+}
