@@ -10,11 +10,11 @@ function asThaiNumber(phone) {
 }
 
 export async function sendMessage(phone, pass) {
+  const {name, time, code} = pass
   phone = asThaiNumber(phone)
 
-  console.log('> Sending SMS to', phone)
-
-  const {name, time, code, phone} = pass
+  // prettier-ignore
+  console.log('> Sending SMS to', phone, 'with name:', name, 'with code:', code, 'at time:', time)
 
   const body = `You have received a visitor pass for Sansiri!
   Your visitor code is ${code}, which you can use for your visit at ${time}.
