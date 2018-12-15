@@ -14,8 +14,6 @@
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "firebase-admin": "^6.4.0",
-    "firebase-functions": "^2.1.0",
     "heroku-self-ping": "^2.0.0",
     "i18n": "^0.8.3"
   },
