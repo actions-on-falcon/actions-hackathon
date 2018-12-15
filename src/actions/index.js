@@ -5,6 +5,7 @@ import {
   Image,
   Button,
   Suggestions,
+  Confirmation,
 } from 'actions-on-google'
 
 import basicAuth from 'basic-auth-connect'
@@ -80,23 +81,40 @@ app.intent('visiting', async conv => {
   }
 })
 
-app.intent('sending', async conv => {
+app.intent('sending', conv => {
   const phone = conv.parameters['phone-number']
+  console.log('> SMS Confirmation Intent')
+  conv.user.storage.phone = phone
+  conv.ask(new Confirmation(`Sending SMS to ${phone}..ready to send?`))
+  conv.ask(new Suggestions([`Yes`, `No`]))
+})
+
+app.intent('actions.intent.CONFIRMATION', async (conv, confirmation) => {
+  const phone = conv.user.storage.phone
   console.log('> SMS Sending Intent')
 
-  sendMessage(phone, conv.user.storage.pass)
-    .then(console.log)
-    .catch(console.error)
+  if (confirmation) {
+    sendMessage(phone, conv.user.storage.pass)
+      .then(console.log)
+      .catch(console.error)
 
-  const response = new SimpleResponse({
-    speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
-    text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
-  })
+    const response = new SimpleResponse({
+      speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
+      text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
+    })
 
-  conv.ask(response)
+    conv.ask(response)
 
-  if (!isSpeaker(conv)) {
-    conv.ask(new Suggestions('Exit'))
+    if (!isSpeaker(conv)) {
+      conv.ask(new Suggestions('Exit'))
+    }
+  } else {
+    const response = new SimpleResponse({
+      speech: `<speak>Okay! You can start all over again or just say "Exit" to terminate this application`,
+      text: `Okay! You can start all over again or just say "Exit" to terminate this application.`,
+    })
+
+    conv.ask(response)
   }
 })
 
