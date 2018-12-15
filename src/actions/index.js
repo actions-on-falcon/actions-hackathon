@@ -20,7 +20,7 @@ function isSpeaker(conv) {
 }
 
 app.intent('welcome', conv => {
-  console.log(chalk.green('info:'), 'Hit welcome intent')
+  console.log('> Welcome Intent')
 
   const response = new SimpleResponse({
     speech: 'Hello',
@@ -56,17 +56,17 @@ app.intent('visiting', async conv => {
 
   if (!isSpeaker(conv)) {
     const card = new BasicCard({
-      title: 'Visitor access code created!',
+      title: 'Visitor Pass has been created!',
       subtitle: 'Code is ' + code,
       image: new Image({
         url:
-          'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' +
+          'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' +
           code,
         alt: code,
       }),
       buttons: new Button({
-        title: 'Open on web browser',
-        url: 'https://assistant.google.com/',
+        title: 'View the Visitor Pass',
+        url: `https://fastpass.netlify.com/pass?id=${code}`,
       }),
     })
 
@@ -75,22 +75,21 @@ app.intent('visiting', async conv => {
 })
 
 app.intent('sending', async conv => {
-  console.log(chalk.green('info:'), 'Hit sending intent')
   const phone = conv.parameters['phone-number']
+  console.log('> SMS Sending Intent')
 
   sendMessage(phone, conv.user.storage.pass)
     .then(console.log)
     .catch(console.error)
 
-  conv.ask(
-    new SimpleResponse({
-      speech:
-        '<speak>SMS has succuessfully sent to receiver<break time="400ms"/>You can now say "Exit" to terminate this application</speak>',
-      text: 'SMS has succuessfully sent to receiver',
-    }),
-  )
+  const response = new SimpleResponse({
+    speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
+    text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
+  })
 
-  if (isSpeaker(conv) === false) {
+  conv.ask(response)
+
+  if (!isSpeaker(conv)) {
     conv.ask(new Suggestions('Exit'))
   }
 })

@@ -14,8 +14,14 @@ export async function sendMessage(phone, pass) {
 
   console.log('> Sending SMS to', phone)
 
+  const {name, time, code, phone} = pass
+
+  const body = `You have received a visitor pass for Sansiri!
+  Your visitor code is ${code}, which you can use for your visit at ${time}.
+  Please get your pass at https://fastpass.netlify.com/pass?id=${code} and show them at the venue.`
+
   const result = await twilio.messages.create({
-    body: 'Siri FastPass',
+    body,
     to: phone,
     from: '+19404681908',
   })
