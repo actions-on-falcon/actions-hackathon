@@ -1,16 +1,33 @@
-import {Service as MemoryService} from 'feathers-memory'
+import firestore from '../common/firestore'
 
-class FastPassService extends MemoryService {
-  async find(params) {
-    const result = await super.find(params)
+const passes = firestore.collection('passes')
 
-    return {active: true, result}
+function generateCode() {
+  return Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, '')
+    .substr(0, 6)
+}
+
+class FastPassService {
+  async find() {
+    const documents = await passes.get()
+
+    const data = documents.docs.map(pass => ({
+      id: pass.id,
+      ...pass.data(),
+    }))
+
+    return {success: true, data}
   }
 
-  async create(data, params) {
-    const pass = await super.create(data, params)
+  async create(data) {
+    const code = generateCode()
+    const pass = {...data, code}
 
-    return {pass}
+    await passes.doc(code).set(pass)
+
+    return {success: true, pass}
   }
 }
 
