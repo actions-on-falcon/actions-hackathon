@@ -1,12 +1,22 @@
 import twilio from '../common/twilio'
 
+function asThaiNumber(phone) {
+  // If begin with 0, append +66
+  if (phone[0] === '0') {
+    return `+66${phone.substr(1)}`
+  }
+
+  return phone
+}
+
 export async function sendMessage(phone, pass) {
+  phone = asThaiNumber(phone)
+
   console.log('> Sending SMS to', phone)
 
   const result = await twilio.messages.create({
     body: 'Siri FastPass',
-    to: '+66812390813',
-    // from: '+15005550006',
+    to: phone,
     from: '+19404681908',
   })
 
