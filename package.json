@@ -2,7 +2,7 @@
   "name": "actions-hackathon",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Pmc Dev <phoomparin@gmail.com>",
+  "author": "Phoomparin Mano <phoomparin@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "actions-on-google": "^2.5.0",
