@@ -41,6 +41,18 @@ app.intent('visiting', async conv => {
   })
 
   const {code} = pass
+  conv.user.storage.pass = pass
+
+  const speech =
+    '<speak>The visitor code has been created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' +
+    code +
+    '</say-as><break time="600ms"/>Which phone number do you want to send the code to?</speak>'
+
+  const text =
+    "The visitor's QR code has been created. Which phone number do you want to send the code to?"
+
+  const response = new SimpleResponse({speech, text})
+  conv.ask(response)
 
   if (!isSpeaker(conv)) {
     const card = new BasicCard({
@@ -60,20 +72,6 @@ app.intent('visiting', async conv => {
 
     conv.ask(card)
   }
-
-  const speech =
-    '<speak>The visitor code has been created<break time="400ms"/>Your <say-as interpret-as="characters">ID</say-as> is <say-as interpret-as="characters">' +
-    code +
-    '</say-as><break time="600ms"/>Which phone number do you want to send the code to?</speak>'
-
-  const text =
-    "The visitor's QR code has been created. Which phone number do you want to send the code to?"
-
-  const response = new SimpleResponse({speech, text})
-
-  conv.ask(response)
-
-  conv.user.storage.pass = pass
 })
 
 app.intent('sending', async conv => {
