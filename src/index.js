@@ -22,6 +22,6 @@ server.get('/', (req, res) => {
 
 const httpAuth = basicAuth(HTTP_USER, HTTP_PASS)
 
-server.post('/actions', httpAuth, actions)
+server.all('/actions', httpAuth, actions)
 
 server.listen(PORT)
