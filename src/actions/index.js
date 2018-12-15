@@ -33,7 +33,11 @@ app.intent('welcome', conv => {
 app.intent('visiting', async conv => {
   console.log(chalk.green('info:'), 'Hit visiting intent')
 
-  const {time, name} = conv.parameters
+  let {time, name} = conv.parameters
+
+  // Normalise name parameter
+  if (name['given-name']) name = name['given-name']
+  if (typeof name !== 'string') name = String(name)
 
   const {pass} = await core.service('pass').create({
     name,
