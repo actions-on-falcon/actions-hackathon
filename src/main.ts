@@ -4,7 +4,10 @@ import bodyParser from 'body-parser'
 import basicAuth from 'basic-auth-connect'
 import selfPing from 'heroku-self-ping'
 
+import hello from './hello'
 import actions from './actions'
+
+hello()
 
 dotenv.config()
 
