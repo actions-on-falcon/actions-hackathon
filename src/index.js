@@ -1,23 +1,22 @@
-import {dialogflow} from 'actions-on-google'
-import bodyParser from 'body-parser'
-import express from 'express'
-import basicAuth from 'basic-auth-connect'
 import dotenv from 'dotenv'
-
+import express from 'express'
+import bodyParser from 'body-parser'
+import basicAuth from 'basic-auth-connect'
 import selfPing from 'heroku-self-ping'
+
+import actions from './actions'
 
 dotenv.config()
 
 selfPing('https://actions-on-falcon.herokuapp.com/')
 
 const server = express()
-const app = dialogflow({debug: false})
 
 const {PORT = 3000, HTTP_USER, HTTP_PASS} = process.env
 
 server.use(basicAuth(HTTP_USER, HTTP_PASS))
-
 server.use(bodyParser.json())
-server.use(app)
+
+server.use(actions)
 
 server.listen(PORT)
