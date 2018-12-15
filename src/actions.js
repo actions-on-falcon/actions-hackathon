@@ -17,7 +17,7 @@ app.intent('welcome', conv => {
 app.intent('visiting', conv => {
   console.log(chalk.green('info:'), 'Hit visiting intent')
 
-  console.log(conv.body.parameters)
+  console.log(conv.parameters)
   const response = new SimpleResponse({
     speech: 'Hello',
     text: 'Hello',
