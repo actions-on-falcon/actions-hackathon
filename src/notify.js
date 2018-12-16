@@ -9,7 +9,7 @@ const {PUSH_CLIENT_EMAIL, PUSH_PRIVATE_KEY} = process.env
 const jwtClient = new google.auth.JWT(
   PUSH_CLIENT_EMAIL,
   null,
-  PUSH_PRIVATE_KEY,
+  JSON.parse(`"${PUSH_PRIVATE_KEY}"`),
   ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
   null,
 )
