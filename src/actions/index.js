@@ -11,12 +11,13 @@ import {
 
 import basicAuth from 'basic-auth-connect'
 import chalk from 'chalk'
-
+import moment from 'moment'
 import {Timestamp} from '@google-cloud/firestore'
+
+import firestore from '../common/firestore'
 
 import core from '../index'
 import {sendMessage} from '../pass/sms'
-import { getUnpackedSettings } from 'http2';
 
 const app = dialogflow({debug: false})
 
@@ -166,23 +167,46 @@ app.intent('guest_arrived', conv => {
   console.log('> Guest Arrived invoked')
 })
 
-app.intent('alert', conv => {
+app.intent('alert', async conv => {
   const uid = conv.request.user.userId
-  let guests = []
+  const passes = firestore.collection('passes')
+
   // TODO: check user who visiting today via Firebase and store name into array called guests
+  const documents = await passes.where('uid', '==', uid).get()
+
+  const guests = documents.docs.map(pass => ({
+    id: pass.id,
+    ...pass.data(),
+  }))
+
+  console.log('> Guests for', uid, 'is', guests)
 
   let speak = ``
   let text = ``
-  if (guests === []) {
-    speak += `<speak>Nobody will visiting you today</speak>`
-    text += `Nobody will visiting you today`
+
+  if (guests.length === 0) {
+    speak += `<speak>There aren't any visitors today.</speak>`
+    text += `There aren't any visitors today.`
   } else {
-    speak += `<speak>Here're the list to guests who visiting you today.<break time="400ms"/></speak>`
-    text += `Here're the list to guests who visiting you today.`
-    guests.foreach(guest => {
-      speak += guest + `<break time="200ms"/>`
+    speak += `<speak>Here are the guests who will be visiting you today.<break time="400ms"/>`
+    text += `Here are the guests who will be visiting you today.`
+
+    guests.forEach(guest => {
+      const {name, time} = guest
+      let dateText = 'today'
+
+      if (time && time._seconds) {
+        // prettier-ignore
+        dateText = `at ${moment(Number(`${time._seconds}000`)).format('h:mm A')}`
+      }
+
+      speak += `${name} will visit you ${dateText}. <break time="200ms"/>`
+      text += `${name} will visit you ${dateText}.`
     })
+
+    speak += '</speak>'
   }
+
   const response = new SimpleResponse({
     speech: speak,
     text: text,
