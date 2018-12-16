@@ -136,12 +136,18 @@ app.intent('confirmation', (conv, input, confirmation) => {
 })
 
 app.intent('setup_push', conv => {
+  console.log('> Setup Push Intent')
+  
   conv.ask(new UpdatePermission({intent: 'guest_arrived'}))
 })
 
 app.intent('finish_push_setup', conv => {
+  console.log('> Finish Push Intent')
+
   if (conv.arguments.get('PERMISSION')) {
     const userID = conv.arguments.get('UPDATES_USER_ID')
+    console.log('> Updates User ID', userID)
+
     // TODO: save userID in DB
     conv.close(`Ok, I'll start alerting you.`)
   } else {
