@@ -5,6 +5,7 @@ import {
   Image,
   Button,
   Suggestions,
+  Confirmation,
 } from 'actions-on-google'
 
 import basicAuth from 'basic-auth-connect'
@@ -39,12 +40,17 @@ app.intent('visiting', async conv => {
   if (name['given-name']) name = name['given-name']
   if (typeof name !== 'string') name = String(name)
 
+  const uid = conv.request.user.userId
+  console.log('> User ID =', uid)
+
+  // Parse time as date object
+  if (typeof time === 'string') time = new Date(time)
+
   const {pass} = await core.service('pass').create({
+    uid,
     name,
     time,
   })
-
-  console.log('Type of time', typeof time, time && time.constructor.name)
 
   const {code} = pass
   conv.user.storage.pass = pass
@@ -80,23 +86,46 @@ app.intent('visiting', async conv => {
   }
 })
 
-app.intent('sending', async conv => {
+app.intent('sending', conv => {
   const phone = conv.parameters['phone-number']
+  console.log('> SMS Confirmation Intent')
+  conv.user.storage.phone = phone
+
+  // prettier-ignore
+  const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
+
+  const suggessions = new Suggestions([`Yes`, `No`])
+
+  conv.ask(confirmation)
+  conv.ask(suggessions)
+})
+
+app.intent('actions.intent.CONFIRMATION', async (conv, confirmation) => {
+  const phone = conv.user.storage.phone
   console.log('> SMS Sending Intent')
 
-  sendMessage(phone, conv.user.storage.pass)
-    .then(console.log)
-    .catch(console.error)
+  if (confirmation) {
+    sendMessage(phone, conv.user.storage.pass)
+      .then(console.log)
+      .catch(console.error)
 
-  const response = new SimpleResponse({
-    speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
-    text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
-  })
+    const response = new SimpleResponse({
+      speech: `<speak>The visitor code has been sent via SMS to the recipient at <say-as interpret-as="character">${phone}</say-as> <break time="400ms"/>You can now say "Exit" to terminate this application</speak>`,
+      text: `The visitor code has been sent via SMS to the recipient at ${phone}.`,
+    })
 
-  conv.ask(response)
+    conv.ask(response)
 
-  if (!isSpeaker(conv)) {
-    conv.ask(new Suggestions('Exit'))
+    if (!isSpeaker(conv)) {
+      conv.ask(new Suggestions('Exit'))
+    }
+  } else {
+    const response = new SimpleResponse({
+      speech: `<speak>Okay! You can start all over again or just say "Exit" to terminate this application`,
+      text: `Okay! You can start all over again or just say "Exit" to terminate this application.`,
+    })
+
+    conv.ask(response)
   }
 })
 
