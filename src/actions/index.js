@@ -40,7 +40,11 @@ app.intent('visiting', async conv => {
   if (name['given-name']) name = name['given-name']
   if (typeof name !== 'string') name = String(name)
 
+  const hostUID = conv.arguments.get('UPDATES_USER_ID')
+  console.log('HostUID', hostUID, conv.arguments)
+
   const {pass} = await core.service('pass').create({
+    hostUID,
     name,
     time,
   })
@@ -85,8 +89,14 @@ app.intent('sending', conv => {
   const phone = conv.parameters['phone-number']
   console.log('> SMS Confirmation Intent')
   conv.user.storage.phone = phone
-  conv.ask(new Confirmation(`Sending SMS to ${phone}..ready to send?`))
-  conv.ask(new Suggestions([`Yes`, `No`]))
+
+  // prettier-ignore
+  const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
+
+  const suggessions = new Suggestions([`Yes`, `No`])
+
+  conv.ask(confirmation)
+  conv.ask(suggessions)
 })
 
 app.intent('actions.intent.CONFIRMATION', async (conv, confirmation) => {
