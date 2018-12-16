@@ -16,6 +16,7 @@ import {Timestamp} from '@google-cloud/firestore'
 
 import core from '../index'
 import {sendMessage} from '../pass/sms'
+import { getUnpackedSettings } from 'http2';
 
 const app = dialogflow({debug: false})
 
@@ -137,7 +138,7 @@ app.intent('confirmation', (conv, input, confirmation) => {
 
 app.intent('setup_push', conv => {
   console.log('> Setup Push Intent')
-  
+
   conv.ask(new UpdatePermission({intent: 'guest_arrived'}))
 })
 
@@ -157,6 +158,31 @@ app.intent('finish_push_setup', conv => {
 
 app.intent('guest_arrived', conv => {
   console.log('> Guest Arrived invoked')
+})
+
+app.intent('alert', conv => {
+  const uid = conv.request.user.userId
+  let guests = []
+  // TODO: check user who visiting today via Firebase and store name into array called guests
+
+  let speak = ``
+  let text = ``
+  if (guests === []) {
+    speak += `<speak>Nobody will visiting you today</speak>`
+    text += `Nobody will visiting you today`
+  } else {
+    speak += `<speak>Here're the list to guests who visiting you today.<break time="400ms"/></speak>`
+    text += `Here're the list to guests who visiting you today.`
+    guests.foreach(guest => {
+      speak += guest + `<break time="200ms"/>`
+    })
+  }
+  const response = new SimpleResponse({
+    speech: speak,
+    text: text,
+  })
+
+  conv.ask(response)
 })
 
 const {HTTP_USER, HTTP_PASS} = process.env
