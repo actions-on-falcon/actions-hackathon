@@ -41,10 +41,9 @@ app.intent('visiting', async conv => {
   if (typeof name !== 'string') name = String(name)
 
   const hostUID = conv.arguments.get('UPDATES_USER_ID')
-  console.log('HostUID', hostUID, conv.arguments)
+  console.log('HostUID', hostUID, conv)
 
   const {pass} = await core.service('pass').create({
-    hostUID,
     name,
     time,
   })
