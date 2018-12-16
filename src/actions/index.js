@@ -137,8 +137,8 @@ app.intent('confirmation', (conv, input, confirmation) => {
 
 app.intent('setup_push', conv => {
   console.log('> Setup Push Intent')
-
-  conv.ask(new UpdatePermission({intent: 'confirmation'}))
+  
+  conv.ask(new UpdatePermission({intent: 'guest_arrived'}))
 })
 
 app.intent('finish_push_setup', conv => {
@@ -153,6 +153,10 @@ app.intent('finish_push_setup', conv => {
   } else {
     conv.close(`Ok, I won't alert you.`)
   }
+})
+
+app.intent('guest_arrived', conv => {
+  console.log('> Guest Arrived invoked')
 })
 
 const {HTTP_USER, HTTP_PASS} = process.env
