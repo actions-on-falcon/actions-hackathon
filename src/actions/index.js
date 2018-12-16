@@ -6,6 +6,7 @@ import {
   Button,
   Suggestions,
   Confirmation,
+  UpdatePermission,
 } from 'actions-on-google'
 
 import basicAuth from 'basic-auth-connect'
@@ -122,7 +123,7 @@ app.intent('confirmation', (conv, input, confirmation) => {
     conv.ask(response)
 
     if (!isSpeaker(conv)) {
-      conv.ask(new Suggestions('Exit'))
+      conv.ask(new Suggestions(['Alert me when he arrive', 'Exit']))
     }
   } else {
     const response = new SimpleResponse({
@@ -132,6 +133,30 @@ app.intent('confirmation', (conv, input, confirmation) => {
 
     conv.ask(response)
   }
+})
+
+app.intent('setup_push', conv => {
+  console.log('> Setup Push Intent')
+  
+  conv.ask(new UpdatePermission({intent: 'guest_arrived'}))
+})
+
+app.intent('finish_push_setup', conv => {
+  console.log('> Finish Push Intent')
+
+  if (conv.arguments.get('PERMISSION')) {
+    const userID = conv.arguments.get('UPDATES_USER_ID')
+    console.log('> Updates User ID', userID)
+
+    // TODO: save userID in DB
+    conv.close(`Ok, I'll start alerting you.`)
+  } else {
+    conv.close(`Ok, I won't alert you.`)
+  }
+})
+
+app.intent('guest_arrived', conv => {
+  console.log('> Guest Arrived invoked')
 })
 
 const {HTTP_USER, HTTP_PASS} = process.env
