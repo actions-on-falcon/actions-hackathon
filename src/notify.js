@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import google from 'googleapis'
+import {google} from 'googleapis'
 import axios from 'axios'
 
 dotenv.config()
