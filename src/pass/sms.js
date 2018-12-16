@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 import twilio from '../common/twilio'
 
 function asThaiNumber(phone) {
@@ -13,11 +15,14 @@ export async function sendMessage(phone, pass) {
   const {name, time, code} = pass
   phone = asThaiNumber(phone)
 
+  const dateObject = time.toDate()
+  const dateText = moment(dateObject).format('LLLL')
+
   // prettier-ignore
   console.log('> Sending SMS to', phone, 'with name:', name, 'with code:', code, 'at time:', time)
 
   const body = `You have received a visitor pass for Sansiri!
-  Your visitor code is ${code}, which you can use for your visit at ${time}.
+  Your visitor code is ${code}, which you can use for your visit at ${dateText}.
   Please get your pass at https://fastpass.netlify.com/visitor?id=${code} and show them at the venue.`
 
   const result = await twilio.messages.create({
