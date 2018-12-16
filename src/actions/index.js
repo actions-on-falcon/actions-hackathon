@@ -11,6 +11,8 @@ import {
 import basicAuth from 'basic-auth-connect'
 import chalk from 'chalk'
 
+import {Timestamp} from '@google-cloud/firestore'
+
 import core from '../index'
 import {sendMessage} from '../pass/sms'
 
@@ -43,8 +45,12 @@ app.intent('visiting', async conv => {
   const uid = conv.request.user.userId
   console.log('> User ID =', uid)
 
-  // Parse time as date object
-  if (typeof time === 'string') time = new Date(time)
+  // Parse time as timestamp object
+  if (typeof time === 'string') {
+    const date = new Date(time)
+
+    time = Timestamp.fromDate(date)
+  }
 
   const {pass} = await core.service('pass').create({
     uid,
@@ -94,15 +100,14 @@ app.intent('sending', conv => {
   // prettier-ignore
   const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
 
-  const suggessions = new Suggestions([`Yes`, `No`])
-
   conv.ask(confirmation)
-  conv.ask(suggessions)
 })
 
-app.intent('actions.intent.CONFIRMATION', async (conv, confirmation) => {
+app.intent('confirmation', (conv, input, confirmation) => {
   const phone = conv.user.storage.phone
   console.log('> SMS Sending Intent')
+
+  console.log('Confirmation', confirmation, 'Phone', phone)
 
   if (confirmation) {
     sendMessage(phone, conv.user.storage.pass)
