@@ -17,12 +17,12 @@ export async function sendMessage(phone, pass) {
 
   console.log('Time is of type', typeof time, time && time.constructor.name)
 
-  let dateText = ''
+  // If we failed to get the time, use this as fallback text for SMS :)
+  let dateText = 'the venue'
 
-  if (time && time.toDate) {
-    const dateObject = time.toDate()
-
-    dateText = moment(dateObject).format('LLLL')
+  // HACK: Use moment to format time._seconds
+  if (time && time._seconds) {
+    dateText = moment(Number(`${time._seconds}000`)).format('LLLL')
   }
 
   // prettier-ignore
