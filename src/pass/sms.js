@@ -15,8 +15,15 @@ export async function sendMessage(phone, pass) {
   const {name, time, code} = pass
   phone = asThaiNumber(phone)
 
-  const dateObject = time.toDate()
-  const dateText = moment(dateObject).format('LLLL')
+  console.log('Time is of type', typeof time, time && time.constructor.name)
+
+  let dateText = ''
+
+  if (time && time.toDate) {
+    const dateObject = time.toDate()
+
+    dateText = moment(dateObject).format('LLLL')
+  }
 
   // prettier-ignore
   console.log('> Sending SMS to', phone, 'with name:', name, 'with code:', code, 'at time:', time)
