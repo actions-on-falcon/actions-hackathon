@@ -40,15 +40,17 @@ app.intent('visiting', async conv => {
   if (name['given-name']) name = name['given-name']
   if (typeof name !== 'string') name = String(name)
 
-  const hostUID = conv.arguments.get('UPDATES_USER_ID')
-  console.log('HostUID', hostUID, conv)
+  const uid = conv.request.user.userId
+  console.log('> User ID =', uid)
+
+  // Parse time as date object
+  if (typeof time === 'string') time = new Date(time)
 
   const {pass} = await core.service('pass').create({
+    uid,
     name,
     time,
   })
-
-  console.log('Type of time', typeof time, time && time.constructor.name)
 
   const {code} = pass
   conv.user.storage.pass = pass
