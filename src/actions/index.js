@@ -103,7 +103,7 @@ app.intent('sending', conv => {
   conv.ask(confirmation)
 })
 
-app.intent('confirmation', (conv, confirmation) => {
+app.intent('confirmation', (conv, input, confirmation) => {
   const phone = conv.user.storage.phone
   console.log('> SMS Sending Intent')
 
