@@ -50,7 +50,13 @@ app.intent('visiting', async conv => {
   if (typeof time === 'string') {
     const date = new Date(time)
 
-    time = Timestamp.fromDate(date)
+    // If date is actually NaN
+    if (isNaN(date)) time = new Date()
+
+    const timestamp = Timestamp.fromDate(date)
+
+    // If seconds exist, use that.
+    if (timestamp.seconds) time = timestamp
   }
 
   const {pass} = await core.service('pass').create({
@@ -137,7 +143,7 @@ app.intent('confirmation', (conv, input, confirmation) => {
 
 app.intent('setup_push', conv => {
   console.log('> Setup Push Intent')
-  
+
   conv.ask(new UpdatePermission({intent: 'guest_arrived'}))
 })
 
