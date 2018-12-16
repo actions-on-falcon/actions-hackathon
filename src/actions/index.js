@@ -100,14 +100,14 @@ app.intent('sending', conv => {
   // prettier-ignore
   const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
 
-  console.log('Confirmation', confirmation, 'Phone', phone)
-
   conv.ask(confirmation)
 })
 
 app.intent('confirmation', (conv, confirmation) => {
   const phone = conv.user.storage.phone
   console.log('> SMS Sending Intent')
+
+  console.log('Confirmation', confirmation, 'Phone', phone)
 
   if (confirmation) {
     sendMessage(phone, conv.user.storage.pass)
