@@ -100,6 +100,8 @@ app.intent('sending', conv => {
   // prettier-ignore
   const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
 
+  console.log('Confirmation', confirmation, 'Phone', phone)
+
   conv.ask(confirmation)
 })
 
