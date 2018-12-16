@@ -100,10 +100,7 @@ app.intent('sending', conv => {
   // prettier-ignore
   const confirmation = new Confirmation(`Sending SMS to ${phone}. Are you ready to send?`)
 
-  const suggessions = new Suggestions([`Yes`, `No`])
-
   conv.ask(confirmation)
-  conv.ask(suggessions)
 })
 
 app.intent('actions.intent.CONFIRMATION', async (conv, confirmation) => {
